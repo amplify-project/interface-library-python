@@ -6,4 +6,7 @@ setup(
     version="1.0.0",
     description="Python interface library for AMPLIFY Portable",
     author="Thomas Röggla",
+    install_requires=[
+        "redis==7.0.1"
+    ]
 )
