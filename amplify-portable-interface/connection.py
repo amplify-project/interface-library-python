@@ -13,6 +13,9 @@ class Connection(object):
         self.__type = type
         self.__streams = []
 
+    def close(self):
+        self.__redis.close()
+
     def register_stream(self, name: str, type: str, data_type: str) -> Stream:
         stream = Stream(self, name)
         self.__streams.append(stream)
