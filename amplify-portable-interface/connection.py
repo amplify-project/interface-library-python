@@ -14,20 +14,20 @@ class Connection(object):
     __SERVICE_REGISTRY = "available_streams"
 
     __redis: Redis
-    __registered_streams: List[Stream]
+    __registered_streams: Dict[str, Stream]
     __type: ConnectionType
 
     def __init__(self, host: str, port: int, type: ConnectionType) -> None:
         self.__redis = Redis(host, port)
         self.__type = type
-        self.__registered_streams = []
+        self.__registered_streams = {}
 
     def close(self):
         self.__redis.close()
 
     def register_stream(self, name: str, type: StreamType, data_type: StreamDataType) -> Stream:
         stream = Stream(self, name, type, data_type)
-        self.__registered_streams.append(stream)
+        self.__registered_streams[name] = stream
 
         self.__redis.hset(
             self.__SERVICE_REGISTRY,
