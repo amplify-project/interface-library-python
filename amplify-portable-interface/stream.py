@@ -32,8 +32,11 @@ class Stream(Serializable):
     def data_type(self):
         return self.__data_type
 
-    def publish(self) -> None:
-        pass
+    def publish(self, data) -> None:
+        self.__connection.publish(
+            self.__name,
+            data
+        )
 
     def serialize(self):
         return {
