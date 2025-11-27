@@ -14,6 +14,12 @@ StreamDataType = Union[
     Literal["boolean"],
 ]
 
+class Serializable(ABC):
+    @abstractmethod
+    def serialize(self):
+        pass
+
+
 class Stream(Serializable):
     def __init__(self, connection: Connection, name: str, type: StreamType, data_type: StreamDataType) -> None:
         self.__name = name
@@ -24,3 +30,10 @@ class Stream(Serializable):
 
     def publish(self) -> None:
         pass
+
+    def serialize(self):
+        return {
+            "name": self.__name,
+            "type": self.__type,
+            "dataType": self.__data_type
+        }
