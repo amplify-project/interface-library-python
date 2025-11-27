@@ -1,14 +1,23 @@
+import json
 from redis import Redis
-from stream import Stream
-from typing import List
+from typing import List, Literal, Union
 
+from stream import Stream, StreamType, StreamDataType
+
+ConnectionType = Union[
+    Literal["input"],
+    Literal["output"],
+    Literal["bidirectional"]
+]
 
 class Connection(object):
+    __SERVICE_REGISTRY = "streams"
+
     __redis: Redis
     __streams: List[Stream]
-    __type: str
+    __type: ConnectionType
 
-    def __init__(self, host: str, port: int, type: str) -> None:
+    def __init__(self, host: str, port: int, type: ConnectionType) -> None:
         self.__redis = Redis(host, port)
         self.__type = type
         self.__streams = []
@@ -16,8 +25,8 @@ class Connection(object):
     def close(self):
         self.__redis.close()
 
-    def register_stream(self, name: str, type: str, data_type: str) -> Stream:
-        stream = Stream(self, name)
+    def register_stream(self, name: str, type: StreamType, data_type: StreamDataType) -> Stream:
+        stream = Stream(self, name, type, data_type)
         self.__streams.append(stream)
 
         return stream
