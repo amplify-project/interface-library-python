@@ -11,7 +11,7 @@ ConnectionType = Union[
 ]
 
 class Connection(object):
-    __SERVICE_REGISTRY = "streams"
+    __SERVICE_REGISTRY = "available_streams"
 
     __redis: Redis
     __streams: List[Stream]
@@ -28,5 +28,10 @@ class Connection(object):
     def register_stream(self, name: str, type: StreamType, data_type: StreamDataType) -> Stream:
         stream = Stream(self, name, type, data_type)
         self.__streams.append(stream)
+
+        self.__redis.set(
+            self.__SERVICE_REGISTRY,
+            json.dumps(stream.serialize())
+        )
 
         return stream
