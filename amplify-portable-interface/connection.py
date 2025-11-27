@@ -25,6 +25,9 @@ class Connection(object):
     def close(self):
         self.__redis.close()
 
+    def publish(self, channel, data):
+        self.__redis.publish(channel, data)
+
     def register_stream(self, name: str, type: StreamType, data_type: StreamDataType) -> Stream:
         stream = Stream(self, name, type, data_type)
         self.__registered_streams[name] = stream
