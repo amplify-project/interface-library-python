@@ -37,6 +37,12 @@ class Connection(object):
 
         return stream
 
+    def unregister_stream(self, name) -> bool:
+        self.__registered_streams.pop(name, None)
+        num_deleted = self.__redis.hdel(self.__SERVICE_REGISTRY, name)
+
+        return num_deleted > 0
+
     def get_available_streams(self) -> Dict[str, Stream]:
         stream_properties = self.__redis.hgetall(self.__SERVICE_REGISTRY)
         streams = {}
