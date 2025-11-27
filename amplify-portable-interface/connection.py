@@ -10,6 +10,11 @@ ConnectionType = Union[
     Literal["bidirectional"]
 ]
 
+
+class StreamExistsError(Exception):
+    pass
+
+
 class Connection(object):
     __SERVICE_REGISTRY = "available_streams"
 
@@ -29,6 +34,11 @@ class Connection(object):
         self.__redis.publish(channel, data)
 
     def register_stream(self, name: str, type: StreamType, data_type: StreamDataType) -> Stream:
+        stream_exists = self.__redis.hexists(self.__SERVICE_REGISTRY, name)
+
+        if stream_exists:
+            raise StreamExistsError(f"Stream with name {name} already exists")
+
         stream = Stream(self, name, type, data_type)
         self.__registered_streams[name] = stream
 
