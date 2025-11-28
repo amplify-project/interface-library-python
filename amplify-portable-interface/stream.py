@@ -22,6 +22,7 @@ class Stream(Serializable):
         self.__type = type
         self.__data_type = data_type
         self.__callback = lambda _: None
+        self.__is_subscribed = False
 
     @property
     def name(self) -> str:
@@ -47,6 +48,17 @@ class Stream(Serializable):
             self.__name,
             self.__callback
         )
+
+        self.__is_subscribed = True
+
+    def unsubscribe(self) -> bool:
+        if not self.__is_subscribed:
+            return False
+
+        self.__connection.pubsub.unsubscribe(self.__name)
+        self.__is_subscribed = False
+
+        return True
 
     def serialize(self):
         return {
