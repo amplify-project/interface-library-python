@@ -1,6 +1,7 @@
 import json
 from redis import Redis
-from typing import Dict, List, Literal, Union
+from typing import Any, Dict, Literal, Union
+from collections.abc import Callable
 
 from stream import Stream, StreamType, StreamDataType
 
@@ -13,6 +14,7 @@ ConnectionType = Union[
 
 class StreamExistsError(Exception):
     pass
+
 
 class StreamNotFoundError(Exception):
     pass
@@ -28,7 +30,13 @@ class Connection(object):
     def __init__(self, host: str, port: int, type: ConnectionType) -> None:
         self.__redis = Redis(host, port)
         self.__type = type
+
         self.__registered_streams = {}
+        self.__pubsub = self.__redis.pubsub()
+
+    @property
+    def pubsub(self):
+        return self.__pubsub
 
     def close(self):
         self.__redis.close()
