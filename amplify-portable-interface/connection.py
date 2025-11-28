@@ -101,7 +101,11 @@ class Connection(object):
             stream_info["dataType"]
         )
 
-
     def stream_exists(self, stream_name: str) -> bool:
         return self.__redis.hexists(self.__SERVICE_REGISTRY, stream_name)
 
+    def subscribe_by_name(self, stream_name: str, callback: Callable[[Any], None]) -> bool:
+        stream = self.get_stream(stream_name)
+        stream.subscribe(callback)
+
+        return True
