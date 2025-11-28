@@ -39,6 +39,9 @@ class Connection(object):
         return self.__pubsub
 
     def close(self):
+        for stream in self.__registered_streams:
+            self.unregister_stream(stream)
+
         self.__redis.close()
 
     def publish(self, channel, data):
