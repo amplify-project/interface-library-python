@@ -14,6 +14,9 @@ ConnectionType = Union[
 class StreamExistsError(Exception):
     pass
 
+class StreamNotFoundError(Exception):
+    pass
+
 
 class Connection(object):
     __SERVICE_REGISTRY = "available_streams"
@@ -71,3 +74,26 @@ class Connection(object):
             )
 
         return streams
+
+    def get_stream(self, stream_name: str) -> Stream:
+        stream_properties = self.__redis.hget(
+            self.__SERVICE_REGISTRY,
+            stream_name
+        )
+
+        if not stream_properties:
+            raise StreamNotFoundError(f"Stream '{stream_name}' does not exist")
+
+        stream_info = json.loads(stream_properties)
+
+        return Stream(
+            self,
+            stream_name,
+            stream_info["type"],
+            stream_info["dataType"]
+        )
+
+
+    def stream_exists(self, stream_name: str) -> bool:
+        return self.__redis.hexists(self.__SERVICE_REGISTRY, stream_name)
+
