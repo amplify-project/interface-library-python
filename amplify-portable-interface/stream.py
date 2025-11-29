@@ -68,6 +68,9 @@ class Stream(Serializable):
 
         return True
 
+    def unregister(self):
+        self.__is_registered = False
+
     def serialize(self):
         return {
             "name": self.__name,
