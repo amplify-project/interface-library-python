@@ -59,9 +59,14 @@ class Connection(object):
 
         return stream
 
-    def unregister_stream(self, name) -> bool:
-        self.__registered_streams.pop(name, None)
-        num_deleted = self.__redis.hdel(self.__SERVICE_REGISTRY, name)
+    def unregister_stream(self, stream: Stream) -> bool:
+        streamObj = self.__registered_streams.pop(stream.name, None)
+
+        if not streamObj:
+            return False
+
+        streamObj.unregister()
+        num_deleted = self.__redis.hdel(self.__SERVICE_REGISTRY, streamObj.name)
 
         return num_deleted > 0
 
