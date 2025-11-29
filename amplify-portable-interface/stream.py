@@ -23,6 +23,7 @@ class Stream(Serializable):
         self.__data_type = data_type
         self.__callback = lambda _: None
         self.__is_subscribed = False
+        self.__is_registered = True
 
     @property
     def name(self) -> str:
@@ -36,7 +37,14 @@ class Stream(Serializable):
     def data_type(self):
         return self.__data_type
 
+    @property
+    def is_registered(self):
+        return self.__is_registered
+
     def publish(self, data: Any) -> None:
+        if not self.__is_registered:
+            return
+
         self.__connection.publish(
             self.__name,
             data
