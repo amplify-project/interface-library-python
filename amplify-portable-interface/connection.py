@@ -44,9 +44,6 @@ class Connection(object):
 
         self.__redis.close()
 
-    def publish(self, channel, data):
-        self.__redis.publish(channel, data)
-
     def register_stream(self, name: str, type: StreamType, data_type: StreamDataType) -> Stream:
         if self.stream_exists(name):
             raise StreamExistsError(f"Stream with name {name} already exists")
