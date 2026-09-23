@@ -1,8 +1,10 @@
+import json
 from abc import ABC, abstractmethod
-from typing import Literal, Union, Any
+from typing import Literal, Union, Any, TYPE_CHECKING
 from collections.abc import Callable
 
-from connection import Connection
+if TYPE_CHECKING:
+    from .connection import Connection
 
 StreamType = Literal["discrete", "continuous"]
 StreamDataType = Literal["number", "string", "boolean"]
@@ -15,7 +17,7 @@ class Serializable(ABC):
 
 
 class Stream(Serializable):
-    def __init__(self, connection: Connection, name: str, type: StreamType, data_type: StreamDataType) -> None:
+    def __init__(self, connection: 'Connection', name: str, type: StreamType, data_type: StreamDataType) -> None:
         self.__connection = connection
 
         self.__name = name
@@ -51,11 +53,14 @@ class Stream(Serializable):
         )
 
     def subscribe(self, callback: Callable[[Any], None]):
-        self.__callback = callback
-        self.__connection.pubsub.subscribe(
-            self.__name,
-            self.__callback
-        )
+        def wrapper(message):
+            if message['type'] == 'message':
+                data = json.loads(message['data'])
+                callback(data)
+
+        self.__callback = wrapper
+        self.__connection.pubsub.subscribe(**{self.__name: self.__callback})
+        self.__connection.ensure_pubsub_thread()
 
         self.__is_subscribed = True
 
