@@ -1,6 +1,7 @@
-# Amplify Portable Interface - Python Library
+# AMPLIFY Portable Interface - Python Library
 
-This library is a Python implementation of the specification found in `../interface-spec/`.
+This library is a Python implementation of the specification found in the
+[Interface Spec](https://github.com/amplify-project/interface-library-spec) repository.
 It provides a standardized way to interact with AMPLIFY-compatible devices and
 services using a Redis-backed communication layer.
 
