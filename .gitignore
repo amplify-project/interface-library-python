@@ -1,3 +1,4 @@
 env/
 amplify_portable_interface_lib.egg-info/
 dist/
+__pycache__/
